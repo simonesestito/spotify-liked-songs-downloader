@@ -14,11 +14,16 @@ class FullDownloader:
         self.yt_downloader = yt_downloader
         self.tagger = tagger
 
-    def download_song(self, song: SpotifySong):
-        song_file = self.yt_downloader.music_path / song.filename()
+    def download_song(self, song: SpotifySong, song_order_index: int, sort_liked_songs: bool):
+        song_file = self.yt_downloader.music_path / song.filename(with_index=song_order_index if sort_liked_songs else None)
         if song_file.exists():
-            # Just update metadata
-            self.tagger.embed_tags(song, song_file)
+            return
+
+        # It is possible that the file already exists, but with a different index
+        another_index_song_file = song.exists_in_folder(self.yt_downloader.music_path)
+        if another_index_song_file is not None:
+            # Just move it where it should be
+            shutil.move(another_index_song_file, song_file)
             return
 
         # Search on YouTube Music

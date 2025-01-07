@@ -3,6 +3,7 @@ import multiprocessing
 import pathlib
 import time
 from queue import Empty
+from typing import Any
 
 from tqdm import tqdm
 
@@ -45,9 +46,9 @@ def read_arguments() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        '--refresh-metadata', '-M',
+        '--sort-liked-songs', '-S',
         action='store_true',
-        help='Refresh the metadata from the Spotify API to the MP3 file (default: False)'
+        help='Sort liked songs, adding a numbered prefix to allow sorting by their filename (default: False)'
     )
 
     return parser.parse_args()
@@ -60,7 +61,7 @@ def main():
     music_path = pathlib.Path(args.music_path)
     refresh_liked_songs = args.refresh_liked_songs
     threads_count = args.threads
-    refresh_metadata = args.refresh_metadata
+    sort_liked_songs = args.sort_liked_songs
 
     data_path.mkdir(parents=True, exist_ok=True)
     music_path.mkdir(parents=True, exist_ok=True)
@@ -73,22 +74,19 @@ def main():
         print('Using cached liked songs')
 
     songs = api.load_cached_liked_songs()
-    songs_to_download = [
-        song
-        for song in songs
-        if refresh_metadata or not (music_path / song.filename()).exists()
-    ]
+    songs.sort(key=lambda s: s.added_at, reverse=True)
 
+    songs_to_download = list(enumerate(songs))
     songs_queue = multiprocessing.Queue(maxsize=len(songs_to_download))
-    for song in songs_to_download:
-        songs_queue.put_nowait(song.__dict__())
+    for i, song in songs_to_download:
+        songs_queue.put_nowait((i, song.__dict__()))
 
     threads = []
     completed_count = multiprocessing.Value('I', 0)  # 16 bits
     for _ in range(threads_count):
         thread = multiprocessing.Process(
             target=downloader_thread,
-            args=(completed_count, music_path, songs_queue,),
+            args=(completed_count, music_path, songs_queue, sort_liked_songs),
         )
         thread.start()
         threads.append(thread)
@@ -112,7 +110,9 @@ def main():
     songs_queue.cancel_join_thread()  # We don't care about the queued songs anymore
 
 
-def downloader_thread(completed_count: multiprocessing.Value, music_path: pathlib.Path, songs: multiprocessing.Queue):
+def downloader_thread(completed_count: multiprocessing.Value, music_path: pathlib.Path,
+                      songs: 'multiprocessing.Queue[tuple[int, dict[str, Any]]]',
+                      sort_liked_songs: bool) -> None:
     downloader = FullDownloader(
         yt_search=YouTubeMusicSearch(),
         yt_downloader=YouTubeDownloader(music_path),
@@ -123,12 +123,12 @@ def downloader_thread(completed_count: multiprocessing.Value, music_path: pathli
 
     while not songs.empty():
         try:
-            song_dict = songs.get(block=True, timeout=5)
+            i, song_dict = songs.get(block=True, timeout=5)
         except Empty:
             return
 
         song = SpotifySong.from_dict(song_dict)
-        downloader.download_song(song)
+        downloader.download_song(song, i, sort_liked_songs)
 
         # Signal the successful completion
         with completed_count.get_lock():
