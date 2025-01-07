@@ -17,6 +17,8 @@ class FullDownloader:
     def download_song(self, song: SpotifySong):
         song_file = self.yt_downloader.music_path / song.filename()
         if song_file.exists():
+            # Just update metadata
+            self.tagger.embed_tags(song, song_file)
             return
 
         # Search on YouTube Music

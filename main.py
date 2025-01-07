@@ -44,6 +44,12 @@ def read_arguments() -> argparse.Namespace:
         help='Number of threads (default: 6)',
     )
 
+    parser.add_argument(
+        '--refresh-metadata', '-M',
+        action='store_true',
+        help='Refresh the metadata from the Spotify API to the MP3 file (default: False)'
+    )
+
     return parser.parse_args()
 
 
@@ -54,6 +60,7 @@ def main():
     music_path = pathlib.Path(args.music_path)
     refresh_liked_songs = args.refresh_liked_songs
     threads_count = args.threads
+    refresh_metadata = args.refresh_metadata
 
     data_path.mkdir(parents=True, exist_ok=True)
     music_path.mkdir(parents=True, exist_ok=True)
@@ -69,7 +76,7 @@ def main():
     songs_to_download = [
         song
         for song in songs
-        if not (music_path / song.filename()).exists()
+        if refresh_metadata or not (music_path / song.filename()).exists()
     ]
 
     songs_queue = multiprocessing.Queue(maxsize=len(songs_to_download))
