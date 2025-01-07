@@ -14,7 +14,7 @@ class TagsEmbedder:
         # Load the file
         file_info = music_tag.load_file(str(file))
 
-        artists = '/'.join(spotify_info.artists)
+        artists = '; '.join(spotify_info.artists)
 
         file_info['artist'] = artists
         file_info['tracktitle'] = spotify_info.title
