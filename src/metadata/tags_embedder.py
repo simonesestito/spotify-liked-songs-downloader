@@ -26,7 +26,6 @@ class TagsEmbedder:
         album_cover_bytes = self.image_downloader.download_image(spotify_info.album_image_url)
         file_info['artwork'] = album_cover_bytes
         file_info['artwork'].value.mime = 'image/jpeg'
-        print(file_info)
         file_info.save()
 
         # Change the last modified date to the date of the like on Spotify
