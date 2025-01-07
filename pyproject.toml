@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "spotify-ytmusic-download"
+version = "1.0.0"
+description = "Spotify Downloader using YTMusic"
+authors = ["Simone Sestito <simone@simonesestito.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+spotipy = "^2.25.0"
+music-tag = "^0.4.3"
+ytmusicapi = "^1.9.1"
+yt-dlp = {extras = ["default"], version = "^2024.12.23"}
+tqdm = "^4.67.1"
+pillow = "^11.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
