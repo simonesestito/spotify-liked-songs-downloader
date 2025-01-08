@@ -42,7 +42,7 @@ class SpotifySong:
 
     @property
     def simplified_title(self) -> str:
-        simple_title = self.title
+        simple_title = self.normalized_title
 
         # Remove everything in brackets
         brackets_pattern = r'\[.*?\]|\(.*?\)'
