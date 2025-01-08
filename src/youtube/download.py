@@ -1,7 +1,7 @@
 import pathlib
 import yt_dlp
 
-from src.youtube import YouTubeSong
+from .youtube_song import YouTubeSong
 
 
 class YouTubeDownloader:
