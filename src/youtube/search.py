@@ -10,7 +10,7 @@ class YouTubeMusicSearch:
         self.yt = YTMusic()
 
     def search(self, song: SpotifySong) -> YouTubeSong | None:
-        query = f'{song.title} - {' '.join(song.artists)}'
+        query = f'{song.title} - {" ".join(song.artists)}'
         results = self.yt.search(
             query=query,
             filter='songs',
@@ -29,7 +29,7 @@ class YouTubeMusicSearch:
         if result_title != original_title:
             print(f'WARN: downloading a potentially different song')
             print(f'\tOriginal title: {song.title}')
-            print(f'\tWhat we found: {result['title']} (https://youtube.com/watch?v={result_id})')
+            print(f'\tWhat we found: {result["title"]} (https://youtube.com/watch?v={result_id})')
             print(f'\tPlease manually check if they differ.')
 
         return YouTubeSong(

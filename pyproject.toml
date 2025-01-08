@@ -6,7 +6,7 @@ authors = ["Simone Sestito <simone@simonesestito.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.10"
 spotipy = "^2.25.0"
 music-tag = "^0.4.3"
 ytmusicapi = "^1.9.1"
