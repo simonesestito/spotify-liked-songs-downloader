@@ -1,6 +1,8 @@
 __pycache__
 /update*.sh
 /data/
+songs.json
+music/
 .cache
 env
 *.log
