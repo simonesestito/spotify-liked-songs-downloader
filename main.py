@@ -8,6 +8,7 @@ from typing import Any
 from tqdm import tqdm
 
 from src.downloader import FullDownloader
+from src.lyrics import LyricsAPI
 from src.metadata import ImageDownloader, TagsEmbedder
 from src.spotify import SpotifyAPI, SpotifySong
 from src.youtube import YouTubeDownloader, YouTubeMusicSearch
@@ -55,6 +56,12 @@ def read_arguments() -> argparse.Namespace:
         help='Login using a link, and not directly opening a browser. Useful in SSH'
     )
 
+    parser.add_argument(
+        '--embed-lyrics', '-l',
+        action='store_true',
+        help='Embed Lyrics in the MP3 file (default: False)'
+    )
+
     return parser.parse_args()
 
 
@@ -67,6 +74,7 @@ def main():
     threads_count = args.threads
     sort_liked_songs = args.sort_liked_songs
     cli_login = args.cli_login
+    embed_lyrics = args.embed_lyrics
 
     data_path.mkdir(parents=True, exist_ok=True)
     music_path.mkdir(parents=True, exist_ok=True)
@@ -91,7 +99,7 @@ def main():
     for _ in range(threads_count):
         thread = multiprocessing.Process(
             target=downloader_thread,
-            args=(completed_count, music_path, songs_queue, sort_liked_songs),
+            args=(completed_count, music_path, songs_queue, sort_liked_songs, embed_lyrics),
         )
         thread.start()
         threads.append(thread)
@@ -117,12 +125,13 @@ def main():
 
 def downloader_thread(completed_count: multiprocessing.Value, music_path: pathlib.Path,
                       songs: 'multiprocessing.Queue[tuple[int, dict[str, Any]]]',
-                      sort_liked_songs: bool) -> None:
+                      sort_liked_songs: bool, embed_lyrics: bool) -> None:
     downloader = FullDownloader(
         yt_search=YouTubeMusicSearch(),
         yt_downloader=YouTubeDownloader(music_path),
         tagger=TagsEmbedder(
             image_downloader=ImageDownloader(),
+            lyrics_api=LyricsAPI() if embed_lyrics else None,
         ),
     )
 

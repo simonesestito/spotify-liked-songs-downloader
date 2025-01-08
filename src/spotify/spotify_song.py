@@ -1,4 +1,5 @@
 import pathlib
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -20,15 +21,15 @@ class SpotifySong:
     year: int
 
     @staticmethod
-    def from_dict(json: dict[str, Any]) -> "SpotifySong":
+    def from_dict(json: dict[str, Any]) -> 'SpotifySong':
         return SpotifySong(
-            added_at=datetime.fromisoformat(json["added_at"]),
-            artists=json["artists"],
-            title=json["title"],
-            album_name=json["album_name"],
-            album_image_url=json["album_image_url"],
-            isrc=json["isrc"],
-            year=json["year"],
+            added_at=datetime.fromisoformat(json['added_at']),
+            artists=json['artists'],
+            title=json['title'],
+            album_name=json['album_name'],
+            album_image_url=json['album_image_url'],
+            isrc=json['isrc'],
+            year=json['year'],
         )
 
     @property
@@ -38,6 +39,29 @@ class SpotifySong:
     @property
     def normalized_artists(self) -> list[str]:
         return [ normalize_string(artist) for artist in self.artists ]
+
+    @property
+    def simplified_title(self) -> str:
+        simple_title = self.title
+
+        # Remove everything in brackets
+        brackets_pattern = r'\[.*?\]|\(.*?\)'
+        simple_title = re.sub(brackets_pattern, '', simple_title)
+
+        # Remove everything after feat
+        feat_pattern = r'(?i)\bfeat\b.*'
+        simple_title = re.sub(feat_pattern, '', simple_title)
+
+        # Remove everything after a dash
+        dash_index = simple_title.find(' - ')
+        if dash_index > -1:
+            simple_title = simple_title[:dash_index]
+
+        # Remove any extra whitespace
+        duplicated_whitespace_pattern = r'\s+'
+        simple_title = re.sub(duplicated_whitespace_pattern, ' ', simple_title)
+
+        return simple_title.strip()
 
     def filename(self, extension: str | None = 'm4a', with_index: int | None = None) -> str:
         artists = ', '.join(self.normalized_artists)

@@ -1,1 +1,1 @@
-from .genius import LyricsAPI
+from .api import LyricsAPI

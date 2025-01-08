@@ -16,6 +16,8 @@ class FullDownloader:
     def download_song(self, song: SpotifySong, song_order_index: int, sort_liked_songs: bool):
         song_file = self.yt_downloader.music_path / song.filename(with_index=song_order_index if sort_liked_songs else None)
         if song_file.exists():
+            # Just update the tags, if needed
+            self.tagger.embed_tags(song, song_file)
             return
 
         # It is possible that the file already exists, but with a different index
