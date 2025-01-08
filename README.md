@@ -6,7 +6,7 @@ Download all your liked songs, offline, from YouTube Music.
 
 ## Usage
 - clone the repository
-- install the *Poetry* project
+- install the *Poetry* project, by running `poetry install --no-root` ([Poetry](https://python-poetry.org/docs/main/#installing-with-the-official-installer) required)
 - create a [Spotify Developer Project](https://developer.spotify.com/dashboard)
 - export the following variables:
   - `SPOTIPY_CLIENT_ID` = the client ID of the Spotify project
