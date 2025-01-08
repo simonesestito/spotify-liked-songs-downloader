@@ -23,7 +23,7 @@ class TagsEmbedder:
         file_info['year'] = spotify_info.year
 
         # Then, download the album cover image
-        if spotify_info.album_image_url:
+        if spotify_info.album_image_url and len(file_info['artwork'].values) == 0:
             album_cover_bytes = self.image_downloader.download_image(spotify_info.album_image_url)
             file_info['artwork'] = album_cover_bytes
             file_info['artwork'].value.mime = 'image/jpeg'
