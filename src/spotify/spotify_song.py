@@ -42,7 +42,7 @@ class SpotifySong:
 
     @property
     def simplified_title(self) -> str:
-        simple_title = self.normalized_title
+        simple_title = self.title
 
         # Remove everything in brackets
         brackets_pattern = r'\[.*?\]|\(.*?\)'
@@ -53,6 +53,7 @@ class SpotifySong:
         simple_title = re.sub(feat_pattern, '', simple_title)
 
         # Remove everything after a dash
+        simple_title = simple_title.replace('\u2013', '-')
         dash_index = simple_title.find(' - ')
         if dash_index > -1:
             simple_title = simple_title[:dash_index]
