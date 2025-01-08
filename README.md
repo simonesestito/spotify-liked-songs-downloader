@@ -39,5 +39,12 @@ Here's a snapshot of the available options:
                     Refresh the liked songs from the Spotify API (default: False)
 --threads, -t THREADS
                     Number of threads (default: 6)
+--sort-liked-songs, -S
+                    Sort liked songs, adding a numbered
+                    prefix to allow sorting by their
+                    filename (default: False)
+--cli-login, -L
+                    Login using a link, and not directly
+                    opening a browser. Useful in SSH
 ```
 

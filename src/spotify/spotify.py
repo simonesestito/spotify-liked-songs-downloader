@@ -10,10 +10,10 @@ from .spotify_song import SpotifySong
 
 
 class SpotifyAPI:
-    def __init__(self, data_path: pathlib.Path):
+    def __init__(self, data_path: pathlib.Path, cli_login: bool = False):
         scope = 'user-library-read'
         self.api = spotipy.Spotify(
-            auth_manager=SpotifyOAuth(scope=scope, redirect_uri='http://127.0.0.1:8080/'),
+            auth_manager=SpotifyOAuth(scope=scope, redirect_uri='http://127.0.0.1:8080/', open_browser=not cli_login),
             client_credentials_manager=SpotifyClientCredentials(),
         )
 

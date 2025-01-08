@@ -51,6 +51,12 @@ def read_arguments() -> argparse.Namespace:
         help='Sort liked songs, adding a numbered prefix to allow sorting by their filename (default: False)'
     )
 
+    parser.add_argument(
+        '--cli-login', '-L',
+        action='store_true',
+        help='Login using a link, and not directly opening a browser. Useful in SSH'
+    )
+
     return parser.parse_args()
 
 
@@ -62,11 +68,12 @@ def main():
     refresh_liked_songs = args.refresh_liked_songs
     threads_count = args.threads
     sort_liked_songs = args.sort_liked_songs
+    cli_login = args.cli_login
 
     data_path.mkdir(parents=True, exist_ok=True)
     music_path.mkdir(parents=True, exist_ok=True)
 
-    api = SpotifyAPI(data_path)
+    api = SpotifyAPI(data_path, cli_login)
     if refresh_liked_songs:
         print('Refreshing liked songs...')
         api.refresh_saved_liked_songs()
