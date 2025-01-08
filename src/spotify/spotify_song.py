@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from src.spotify.utils import normalize_string
+from .utils import normalize_string
 
 
 @dataclass

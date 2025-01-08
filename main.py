@@ -8,11 +8,9 @@ from typing import Any
 from tqdm import tqdm
 
 from src.downloader import FullDownloader
-from src.metadata.image_downloader import ImageDownloader
-from src.metadata.tags_embedder import TagsEmbedder
+from src.metadata import ImageDownloader, TagsEmbedder
 from src.spotify import SpotifyAPI, SpotifySong
-from src.youtube.download import YouTubeDownloader
-from src.youtube.search import YouTubeMusicSearch
+from src.youtube import YouTubeDownloader, YouTubeMusicSearch
 
 
 def read_arguments() -> argparse.Namespace:

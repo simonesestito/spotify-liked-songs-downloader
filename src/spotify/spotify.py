@@ -3,8 +3,7 @@ import pathlib
 from datetime import datetime
 from typing import Generator
 
-import spotipy
-from spotipy import SpotifyOAuth, SpotifyClientCredentials
+from spotipy import Spotify, SpotifyOAuth, SpotifyClientCredentials
 
 from .spotify_song import SpotifySong
 
@@ -12,7 +11,7 @@ from .spotify_song import SpotifySong
 class SpotifyAPI:
     def __init__(self, data_path: pathlib.Path, cli_login: bool = False):
         scope = 'user-library-read'
-        self.api = spotipy.Spotify(
+        self.api = Spotify(
             auth_manager=SpotifyOAuth(scope=scope, redirect_uri='http://127.0.0.1:8080/', open_browser=not cli_login),
             client_credentials_manager=SpotifyClientCredentials(),
         )

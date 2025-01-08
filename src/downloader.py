@@ -2,10 +2,9 @@ import pathlib
 import shutil
 import tempfile
 
-from src.metadata.tags_embedder import TagsEmbedder
+from src.metadata import TagsEmbedder
 from src.spotify import SpotifySong
-from src.youtube.download import YouTubeDownloader
-from src.youtube.search import YouTubeMusicSearch
+from src.youtube import YouTubeDownloader, YouTubeMusicSearch
 
 
 class FullDownloader:
