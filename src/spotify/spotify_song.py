@@ -39,7 +39,7 @@ class SpotifySong:
     def normalized_artists(self) -> list[str]:
         return [ normalize_string(artist) for artist in self.artists ]
 
-    def filename(self, extension: str | None = 'mp3', with_index: int | None = None) -> str:
+    def filename(self, extension: str | None = 'm4a', with_index: int | None = None) -> str:
         artists = ', '.join(self.normalized_artists)
 
         # Prefix
@@ -54,7 +54,7 @@ class SpotifySong:
         return f'{numbered_prefix}{self.normalized_title} - {artists}{extension}'
 
 
-    def exists_in_folder(self, folder: pathlib.Path, extension: str | None = 'mp3') -> pathlib.Path | None:
+    def exists_in_folder(self, folder: pathlib.Path, extension: str | None = 'm4a') -> pathlib.Path | None:
         simple_filename = self.filename(extension=extension)
 
         possible_matches = [

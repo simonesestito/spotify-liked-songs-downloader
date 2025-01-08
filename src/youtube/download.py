@@ -12,21 +12,20 @@ class YouTubeDownloader:
         music_path = dest_dir or self.music_path
         song_file = music_path / song.info.filename(extension=None)
 
-        downloader = yt_dlp.YoutubeDL({
-            'format': 'bestaudio',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-            }],
-            'outtmpl': str(song_file.resolve()),
-            'noplaylist': True,
-            'retries': 3,
-            'no_warnings': True,
-            'quiet': True,
-            'verbose': False,
-            'noprogress': True,
-        })
+        with yt_dlp.YoutubeDL({
+                'format': 'bestaudio/best',
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'm4a',
+                }],
+                'outtmpl': str(song_file.resolve()),
+                'noplaylist': True,
+                'retries': 3,
+                'no_warnings': True,
+                'quiet': True,
+                'verbose': False,
+                'noprogress': True,
+            }) as downloader:
+                downloader.download([song.url])
 
-        downloader.download([song.url])
-
-        return song_file.with_suffix('.mp3')
+        return song_file.with_suffix('.m4a')
