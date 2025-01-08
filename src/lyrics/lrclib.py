@@ -37,7 +37,6 @@ class LRCLibLyrics:
         }
 
         response = requests.get(f'{self.base_url}/search', headers=self.headers, params=params)
-        print('Best match for', track_name, artist_name, end='', flush=True)
         return LRCLibLyrics._parse_response(response)
 
 
@@ -55,8 +54,6 @@ class LRCLibLyrics:
             data = next((entry for entry in data if entry['syncedLyrics'] or entry['plainLyrics']), None)
             if data is None:
                 return None
-
-            print(' is', data['trackName'], data['artistName'], flush=True)
 
         if 'instrumental' in data and data['instrumental']:
             return ''  # Not None, but an empty lyrics
