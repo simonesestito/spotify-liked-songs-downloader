@@ -2,29 +2,27 @@ import pathlib
 import shutil
 import tempfile
 
+from src.local import LocalQuery
 from src.metadata import TagsEmbedder
 from src.spotify import SpotifySong
 from src.youtube import YouTubeDownloader, YouTubeMusicSearch
 
 
 class FullDownloader:
-    def __init__(self, yt_search: YouTubeMusicSearch, yt_downloader: YouTubeDownloader, tagger: TagsEmbedder):
+    def __init__(self, yt_search: YouTubeMusicSearch, yt_downloader: YouTubeDownloader, tagger: TagsEmbedder,
+                 stored_songs: LocalQuery):
         self.yt_search = yt_search
         self.yt_downloader = yt_downloader
         self.tagger = tagger
+        self.stored_songs = stored_songs
 
     def download_song(self, song: SpotifySong, song_order_index: int, sort_liked_songs: bool):
-        song_file = self.yt_downloader.music_path / song.filename(with_index=song_order_index if sort_liked_songs else None)
-        if song_file.exists():
+        out_song_file = self.yt_downloader.music_path / song.filename(with_index=song_order_index if sort_liked_songs else None)
+        existing_song_file = self.stored_songs.find_file_for_song(song)
+        if existing_song_file is not None:
             # Just update the tags, if needed
-            self.tagger.embed_tags(song, song_file)
-            return
-
-        # It is possible that the file already exists, but with a different index
-        another_index_song_file = song.exists_in_folder(self.yt_downloader.music_path)
-        if another_index_song_file is not None:
-            # Just move it where it should be
-            shutil.move(another_index_song_file, song_file)
+            shutil.move(existing_song_file, out_song_file)
+            self.tagger.embed_tags(song, out_song_file)
             return
 
         # Search on YouTube Music
@@ -43,4 +41,4 @@ class FullDownloader:
             self.tagger.embed_tags(song, temp_song_file)
 
             # Now that the job is completely finished, we can move the temp file to the actual directory
-            shutil.move(temp_song_file, song_file)
+            shutil.move(temp_song_file, out_song_file)

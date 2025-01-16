@@ -13,6 +13,18 @@ class TagsEmbedder:
         self.image_downloader = image_downloader
         self.lyrics_api = lyrics_api
 
+    @staticmethod
+    def get_isrc_for_file(file: pathlib.Path) -> str | None:
+        try:
+            file_info = music_tag.load_file(str(file))
+            return str(file_info["isrc"])
+        except Exception:
+            # FIXME: use more precise exception handling:
+            #  - test when file doesn't exist
+            #  - test when file is not music
+            #  - test with music file without ISRC key in its metadata
+            return None
+
     def embed_tags(self, spotify_info: SpotifySong, file: pathlib.Path):
         # Load the file
         file_info = music_tag.load_file(str(file))

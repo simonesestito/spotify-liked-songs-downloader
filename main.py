@@ -8,6 +8,7 @@ from typing import Any
 from tqdm import tqdm
 
 from src.downloader import FullDownloader
+from src.local import LocalQuery
 from src.lyrics import LyricsAPI
 from src.metadata import ImageDownloader, TagsEmbedder
 from src.spotify import SpotifyAPI, SpotifySong
@@ -94,12 +95,15 @@ def main():
     for i, song in songs_to_download:
         songs_queue.put_nowait((i, song.__dict__()))
 
+    # Collect the songs already in the local storage
+    stored_songs = LocalQuery(music_path)
+
     threads = []
     completed_count = multiprocessing.Value('I', 0)  # 16 bits
     for _ in range(threads_count):
         thread = multiprocessing.Process(
             target=downloader_thread,
-            args=(completed_count, music_path, songs_queue, sort_liked_songs, embed_lyrics),
+            args=(completed_count, music_path, songs_queue, stored_songs, sort_liked_songs, embed_lyrics),
         )
         thread.start()
         threads.append(thread)
@@ -122,10 +126,13 @@ def main():
     status_thread.join()
     songs_queue.cancel_join_thread()  # We don't care about the queued songs anymore
 
+    # Delete all unused songs, after being certain that all threads exited
+    stored_songs.delete_unused_songs(songs)
+
 
 def downloader_thread(completed_count: multiprocessing.Value, music_path: pathlib.Path,
                       songs: 'multiprocessing.Queue[tuple[int, dict[str, Any]]]',
-                      sort_liked_songs: bool, embed_lyrics: bool) -> None:
+                      stored_songs: LocalQuery, sort_liked_songs: bool, embed_lyrics: bool) -> None:
     downloader = FullDownloader(
         yt_search=YouTubeMusicSearch(),
         yt_downloader=YouTubeDownloader(music_path),
@@ -133,6 +140,7 @@ def downloader_thread(completed_count: multiprocessing.Value, music_path: pathli
             image_downloader=ImageDownloader(),
             lyrics_api=LyricsAPI() if embed_lyrics else None,
         ),
+        stored_songs=stored_songs,
     )
 
     while not songs.empty():
