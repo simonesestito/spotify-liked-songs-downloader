@@ -1,5 +1,6 @@
 __pycache__
 /update*.sh
+/export_to_mobile.sh
 /data/
 songs.json
 music/
