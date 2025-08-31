@@ -9,6 +9,7 @@ from .utils import normalize_string
 
 @dataclass
 class SpotifySong:
+    uri: str
     added_at: datetime
 
     artists: list[str]
@@ -23,6 +24,7 @@ class SpotifySong:
     @staticmethod
     def from_dict(json: dict[str, Any]) -> 'SpotifySong':
         return SpotifySong(
+            uri=json['uri'],
             added_at=datetime.fromisoformat(json['added_at']),
             artists=json['artists'],
             title=json['title'],
@@ -112,6 +114,7 @@ class SpotifySong:
 
     def __dict__(self) -> dict[str, Any]:
         return {
+            'uri': self.uri,
             'added_at': self.added_at.isoformat(),
             'artists': self.artists,
             'title': self.title,

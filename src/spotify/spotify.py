@@ -31,6 +31,8 @@ class SpotifyAPI:
 
                 track_data = song['track']
 
+                uri = track_data['uri']
+
                 artists_data = track_data['artists']
                 artists = [
                     artist['name']
@@ -53,6 +55,7 @@ class SpotifyAPI:
                 album_release_year = int(track_data['album']['release_date'][:4])
 
                 yield SpotifySong(
+                    uri=uri,
                     added_at=added_at,
                     artists=artists,
                     title=song_name,
